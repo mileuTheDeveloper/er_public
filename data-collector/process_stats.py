@@ -64,7 +64,6 @@ def main():
                 'tier': {
                     '$switch': {
                         'branches': [
-                            {'case': {'$gte': ['$userGames.mmrBefore', 8000]}, 'then': 'demigod'},
                             {'case': {'$gte': ['$userGames.mmrBefore', 7100]}, 'then': 'mithril'},
                             {'case': {'$gte': ['$userGames.mmrBefore', 6400]}, 'then': 'meteorite'},
                             {'case': {'$gte': ['$userGames.mmrBefore', 5000]}, 'then': 'diamond'},

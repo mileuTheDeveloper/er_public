@@ -19,7 +19,8 @@ async def get_comparison_stats(
     
     # 티어 통계 쿼리
     if tier != 'unrank':
-        query_tier = tier if tier not in ['titan', 'immortal'] else 'demigod'
+        # 데이터 수집기가 돌아 데미갓 통계가 DB에 쌓이기 전까지는 mithril을 빌려다 씁니다. (유저 요청: 미스릴+ 통합)
+        query_tier = tier if tier not in ['demigod', 'titan', 'immortal'] else 'mithril'
         tasks.append(db.tier_overall_stats.find_one({'tier': query_tier}, {'_id': 0}))
     else:
         tasks.append(asyncio.sleep(0, result=None))
