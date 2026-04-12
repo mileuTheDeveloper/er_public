@@ -1,42 +1,43 @@
 // frontend/middleware.js
-
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  const ip = request.ip || request.headers.get('x-forwarded-for');
+  // 1. IP 추출 로직 강화 (Vercel 특성 반영)
+  let ip = request.ip || request.headers.get('x-forwarded-for') || '127.0.0.1';
+  if (ip.includes(',')) {
+    ip = ip.split(',')[0].trim(); // 여러 개일 경우 첫 번째 것만 사용
+  }
   
-  // 환경변수가 없으면 빈 배열 처리
-  const bypassIps = process.env.MAINTENANCE_BYPASS_IPS?.split(',') || [];
-
-  // 현재 요청하려는 주소
   const { pathname } = request.nextUrl;
 
-  // 점검 모드 체크
+  // 2. 환경변수 안전하게 읽기
+  const bypassIpsStr = process.env.MAINTENANCE_BYPASS_IPS || '';
+  const bypassIps = bypassIpsStr ? bypassIpsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
   const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
 
-  // [수정된 핵심 로직]
-  // 1. 점검 모드가 켜져 있어야 함
-  // 2. 내 IP가 우회 목록에 없어야 함
-  // 3. 점검 페이지 자체가 아니어야 함
-  // 4. ✨ 중요: 이미지 폴더(/images)는 납치하지 마!
-  // 5. ✨ 중요: 넥스트 내부 시스템 파일(/_next)도 건드리지 마!
+  // 3. 점검 모드 로직
   if (
     isMaintenanceMode &&
     !bypassIps.includes(ip) &&
-    !pathname.startsWith('/maintenance') &&
-    !pathname.startsWith('/images') &&      // 👈 [해결사] 여기입니다!
-    !pathname.startsWith('/_next') &&       // Next.js 시스템 파일 통과
-    !pathname.startsWith('/favicon.ico')    // 파비콘 통과
+    !pathname.startsWith('/maintenance')
   ) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/maintenance';
-    return NextResponse.rewrite(url);
+    const maintenanceUrl = new URL('/maintenance', request.url);
+    return NextResponse.rewrite(maintenanceUrl);
   }
 
   return NextResponse.next();
 }
 
-// 미들웨어가 실행될 경로 범위 (이미지 등 정적 파일도 체크해야 하므로 범위 유지)
+// 4. Matcher 설정 최적화 (정적 파일 및 시스템 파일을 미들웨어 범위에서 완전히 제외)
 export const config = {
-  matcher: '/:path*',
+  matcher: [
+    /*
+     * 아래 경로들을 제외한 모든 경로에서 미들웨어 실행
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, favicon.png, images, robots.txt 등
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|favicon.png|images|maintenance|robots.txt).*)',
+  ],
 };
