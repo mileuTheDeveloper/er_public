@@ -6,6 +6,7 @@ import styles from "./pageComp.module.css";
 import StatTable from "../components/StatTable";
 import AIAnalysis from "../components/AIAnalysis";
 import MostPlayed from "../components/MostPlayed";
+import { getCharacterInfo } from '@/lib/characterData';
 
 export default function RankPage({ gameType, rankStat, diaRankCharStats, tierStats, rankAi, angpyeongAi, loading }) {
   if (!rankStat) {
@@ -152,6 +153,7 @@ export default function RankPage({ gameType, rankStat, diaRankCharStats, tierSta
   } : { core: [], combat: [], operation: [], vision: [] };
 
   const mostPlayedChars = rankStat.recent_most_3_characters;
+  const mostCharInfo = getCharacterInfo(rankStat.most_used_character_code);
 
   const getAnalysisText = () => {
     switch (gameType) {
@@ -186,7 +188,7 @@ export default function RankPage({ gameType, rankStat, diaRankCharStats, tierSta
 
         {
           diaRankStatsData ? (
-            <StatTable title={"다이아+ " + diaRankCharStats["character_name"] + " 평균 지표"} 
+            <StatTable title={"다이아+ " + mostCharInfo.name + " 평균 지표"} 
               data={diaRankStatsData}
               tooltipText="최근 랭크 게임에서 가장 많이 사용한 실험체의 다이아 이상 구간에서의 평균 지표를 나타냅니다."
               isDetailedVisible={isDetailedVisible}

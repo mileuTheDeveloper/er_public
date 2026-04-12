@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import StatTable from "../components/StatTable";
 import AIAnalysis from "../components/AIAnalysis";
 import MostPlayed from "../components/MostPlayed";
+import { getCharacterInfo } from '@/lib/characterData';
 
 export default function NormalPage({ normalStat, diaNormalCharStats, ai, loading }) {
     if(!normalStat){
@@ -113,6 +114,7 @@ export default function NormalPage({ normalStat, diaNormalCharStats, ai, loading
   } : { core: [], combat: [], operation: [], vision: [] };
 
   const mostPlayedChars = normalStat.recent_most_3_characters;
+  const mostCharInfo = getCharacterInfo(normalStat.most_used_character_code);
 
   const [isDetailedVisible, setIsDetailedVisible] = useState(false);
 
@@ -135,7 +137,7 @@ export default function NormalPage({ normalStat, diaNormalCharStats, ai, loading
                 {/* '일반'일 때 일반 관련 테이블 표시 (수정한 부분) */}
                 {
                     diaNormalStatsData ? (
-                        <StatTable title={"다이아+ "+diaNormalCharStats["character_name"]+" 평균 지표"} data={diaNormalStatsData}
+                        <StatTable title={"다이아+ "+mostCharInfo.name+" 평균 지표"} data={diaNormalStatsData}
                             tooltipText="최근 일반 게임에서 가장 많이 사용한 실험체의 다이아 이상 구간에서의 평균 지표를 나타냅니다."
                             isDetailedVisible={isDetailedVisible}
                             onToggleDetailed={toggleDetailedVisibility} />
