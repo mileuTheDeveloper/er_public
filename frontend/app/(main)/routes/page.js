@@ -11,13 +11,13 @@ import styles from './page.module.css';
 import { useState } from 'react';
 import { getRouteById } from '@/lib/api/routeApi';
 
-import RouteSearch from '../components/RouteSearch';
+import RouteSearch from '../components/routes/RouteSearch';
 import RouteSummary from '../components/route/RouteSummary';
 import RoutePath from '../components/route/RoutePath';
 import RouteItems from '../components/route/RouteItems';
 import RouteTraits from '../components/route/RouteTraits';
 import RouteSkillOrder from '../components/route/RouteSkillOrder';
-import LoadingWastingTime from '../components/LoadingWastingTime';
+import LoadingWastingTime from '../components/shared/LoadingWastingTime';
 
 export default function RouteSearchPage() {
   const [mvpData, setMvpData] = useState(null);

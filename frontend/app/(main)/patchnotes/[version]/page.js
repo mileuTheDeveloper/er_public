@@ -4,7 +4,7 @@ import { getPatchNoteData } from '@/lib/patchNotes';
 // import remarkGfm from 'remark-gfm';
 
 // 2. 새로 만든 클라이언트 컴포넌트를 임포트합니다.
-import MarkdownRenderer from '../../components/MarkdownRenderer';
+import MarkdownRenderer from '../../components/patchnotes/MarkdownRenderer';
 
 // ... generateMetadata 함수 (변경 없음) ...
 export async function generateMetadata({ params }) {
